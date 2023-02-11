@@ -84,7 +84,7 @@ const addDepartment = () => {
             message: 'What is the name of the department?'
         }
     ]).then((department) => {
-        queries.addDepartment(department.name).then(() => console.log(`Added ${department.name} department to the database.`))
+        queries.addDepartment(department.name).then(() => console.log('Added deparment successfully!'))
     })
 }
 
@@ -105,18 +105,19 @@ const addRole = () => {
     ]).then((role) => {
         const roleDetails = [role.name, role.salary];
         queries.fetchDepartment().then(([departments]) => {
-            console.log(departments);
             inquirer.prompt([
                 {
                     type: 'list',
                     name: 'choice',
                     message: 'What department does the role belong to?',
-                    choices: departments
+                    choices: departments.map(department => {
+                        return department.department
+                    })
                 }
             ]).then((department) => {
                 roleDetails.push(department.choice);
-
-                console.log(roleDetails);
+                // console.log(roleDetails);
+                queries.addRole(roleDetails[0], roleDetails[1], roleDetails[2]).then(() => console.log('Added role successfully!'))
             })
         })
     })
