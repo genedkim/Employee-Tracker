@@ -22,7 +22,8 @@ class Queries {
     }
     addRole(name, id, department) {
         const departmentId = this.connection.promise().query(`SELECT id FROM department WHERE department.name = ?;`, department);
-        return this.connection.promise().query('INSERT INTO role VALUES (?, ?, ?);', name, id, departmentId);
+        console.log(departmentId);
+        return this.connection.promise().query(`INSERT INTO role VALUES (?, ?, ?);`, name, id, departmentId);
     }
 }
 
