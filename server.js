@@ -28,7 +28,7 @@ const chooseAction = () => {
                 addEmployee();
                 break;
             case 'Update employee role':
-
+                updateEmployee();
                 break;
             case 'View all roles':
                 viewRoles();
@@ -43,13 +43,20 @@ const chooseAction = () => {
                 addDepartment();
                 break;
             case 'Quit':
-                console.log('Press control + C to quit.')
+                process.exit();
                 break;
         }
     })
-}
+};
 
-chooseAction();
+const init = () => {
+    console.log('   ______________________ ');
+    console.log('  |                      |');
+    console.log('  |   EMPLOYEE MANAGER   |');
+    console.log('  |______________________|');
+    console.log('                          ');
+    chooseAction();
+};
 
 const viewDepartments = () => {
     console.table('Showing all departments: \n');
@@ -57,7 +64,7 @@ const viewDepartments = () => {
         console.log(rows);
         chooseAction();
     });
-}
+};
 
 const viewRoles = () => {
     console.log('Showing all roles: \n');
@@ -65,7 +72,7 @@ const viewRoles = () => {
         console.table(rows);
         chooseAction();
     });
-}
+};
 
 const viewEmployees = () => {
     console.log('Showing all employees: \n');
@@ -73,7 +80,7 @@ const viewEmployees = () => {
         console.table(rows);
         chooseAction();
     });
-}
+};
 
 const addDepartment = () => {
     inquirer.prompt([
@@ -83,11 +90,13 @@ const addDepartment = () => {
             message: 'What is the name of the department?'
         }
     ]).then((department) => {
-        queries.addDepartment(department.name).then(() => console.log('Added deparment successfully!\n'));
-        chooseAction();
+        queries.addDepartment(department.name)
+        .then(() => {
+            console.log('Added deparment successfully!\n');
+            chooseAction();
+        });
     });
-    chooseAction();
-}
+};
 
 const addRole = () => {
     queries.fetchDepartment().then(([departments]) => {   
@@ -111,11 +120,14 @@ const addRole = () => {
         ]).then((role) => {
             const roleDetails = [role.name, role.salary, role.department];
             console.log(roleDetails);
-            queries.addRole(roleDetails[0], roleDetails[1], roleDetails[2]).then(() => console.log('Added role successfully!\n'));
-            chooseAction();
+            queries.addRole(roleDetails[0], roleDetails[1], roleDetails[2])
+            .then(() => {
+                console.log('Added role successfully!\n')
+                chooseAction();
+            });
         });
     });
-}
+};
 
 const addEmployee = () => {
     queries.fetchRole().then(([roles]) => {
@@ -154,10 +166,52 @@ const addEmployee = () => {
                     }
                 ]).then((response) => {
                     employeeDetails.push(response.managerId);
-                    queries.addEmployee(employeeDetails[0], employeeDetails[1], employeeDetails[2], employeeDetails[3]).then(() => console.log('Added employee successfully!\n'));
-                    chooseAction();
+                    queries.addEmployee(employeeDetails[0], employeeDetails[1], employeeDetails[2], employeeDetails[3])
+                    .then(() => {
+                        console.log('Added employee successfully!\n')
+                        chooseAction();
+                    });
                 });
             });
         });
     });
-}
+};
+
+const updateEmployee = () => {
+    queries.fetchEmployee().then(([employees]) => {
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'employee',
+                message: "Which employee's role do you want to update?",
+                choices: employees.map(employee => {
+                    return  {name: employee.first_name + " " + employee.last_name, value: employee.id}
+                })
+            }
+        ]).then((response) => {
+            const employeeId = response.employee;
+            queries.fetchRole().then(([roles]) => {
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'role',
+                        message: "Which role do you want to assign the selected employee?",
+                        choices: roles.map(role => {
+                            return {name: role.title, value: role.id}
+                        })
+                    }
+                ]).then((newRole) => {
+                    const newRoleId = newRole.role;
+                    queries.updateEmployee(employeeId, newRoleId)
+                    .then(() => {
+                        console.log('Updated employee role successfully!\n')
+                        chooseAction();
+                    });
+                })
+            })
+
+        })
+    })
+};
+
+init();

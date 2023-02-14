@@ -24,7 +24,10 @@ class Queries {
         return this.connection.promise().query(`INSERT INTO role (title, salary, department_id) VALUES ('${name}', ${id}, ${department});`);
     }
     addEmployee(firstName, lastName, roleId, managerId) {
-        return this.connection.promise().query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${firstName}', '${lastName}', ${roleId}, ${managerId});`)
+        return this.connection.promise().query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${firstName}', '${lastName}', ${roleId}, ${managerId});`);
+    }
+    updateEmployee(employeeId, roleId) {
+        return this.connection.promise().query(`UPDATE employee SET role_id = ${roleId} WHERE id = ${employeeId};`);
     }
 }
 
