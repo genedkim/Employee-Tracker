@@ -36,6 +36,7 @@ All of the 'View all' options will display the respective table from the databas
 
 ## Credits
 Application created by Gene Kim
+
 Email: [genedanielkim@gmail.com](mailto:genedanielkim@gmail.com)
 
 ## License
