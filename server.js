@@ -59,9 +59,9 @@ const init = () => {
 };
 
 const viewDepartments = () => {
-    console.table('Showing all departments: \n');
+    console.log('Showing all departments: \n');
     queries.fetchDepartment().then(([rows]) => {
-        console.log(rows);
+        console.table(rows);
         chooseAction();
     });
 };
@@ -119,7 +119,7 @@ const addRole = () => {
             }
         ]).then((role) => {
             const roleDetails = [role.name, role.salary, role.department];
-            console.log(roleDetails);
+            // console.log(roleDetails);
             queries.addRole(roleDetails[0], roleDetails[1], roleDetails[2])
             .then(() => {
                 console.log('Added role successfully!\n')
