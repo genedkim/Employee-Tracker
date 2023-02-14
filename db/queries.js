@@ -18,7 +18,7 @@ class Queries {
         LEFT JOIN employee manager ON manager.id = employee.manager_id;`);
     }
     addDepartment(department) {
-        return this.connection.promise().query(`INSERT INTO department SET ${department};`);
+        return this.connection.promise().query(`INSERT INTO department (name) VALUES ('${department}');`);
     }
     addRole(name, id, department) {
         return this.connection.promise().query(`INSERT INTO role (title, salary, department_id) VALUES ('${name}', ${id}, ${department});`);
