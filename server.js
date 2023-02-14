@@ -43,7 +43,7 @@ const chooseAction = () => {
                 addDepartment();
                 break;
             case 'Quit':
-
+                console.log('Press control + C to quit.')
                 break;
         }
     })
@@ -57,7 +57,6 @@ const viewDepartments = () => {
         console.log(rows);
         chooseAction();
     });
-    
 }
 
 const viewRoles = () => {
@@ -84,8 +83,10 @@ const addDepartment = () => {
             message: 'What is the name of the department?'
         }
     ]).then((department) => {
-        queries.addDepartment(department.name).then(() => console.log('Added deparment successfully!'))
-    })
+        queries.addDepartment(department.name).then(() => console.log('Added deparment successfully!\n'));
+        chooseAction();
+    });
+    chooseAction();
 }
 
 const addRole = () => {
@@ -104,15 +105,16 @@ const addRole = () => {
                 name: 'department',
                 message: 'What department does the role belong to?',
                 choices: departments.map(department => {
-                    return department.department
+                    return {name: department.department, value: department.id}
                 })
             }
         ]).then((role) => {
             const roleDetails = [role.name, role.salary, role.department];
-            // console.log(roleDetails);
-            queries.addRole(roleDetails[0], roleDetails[1], roleDetails[2]).then(() => console.log('Added role successfully!'));
-        })
-    })
+            console.log(roleDetails);
+            queries.addRole(roleDetails[0], roleDetails[1], roleDetails[2]).then(() => console.log('Added role successfully!\n'));
+            chooseAction();
+        });
+    });
 }
 
 const addEmployee = () => {
@@ -131,12 +133,31 @@ const addEmployee = () => {
                 name: 'role',
                 message: "What is the employee's role?",
                 choices: roles.map(role => {
-                    return role.title 
+                    return {name: role.title, value: role.id}
                 })
             }
         ]).then((employee) => {
             const employeeDetails = [employee.firstName, employee.lastName, employee.role];
-            
-        })
-    })
+            // console.log(employeeDetails);
+            queries.fetchEmployee().then(([employees]) => {
+                const employeeList = employees.map(employee => {
+                    return  {name: employee.first_name + " " + employee.last_name, value: employee.id}
+                });
+                employeeList.push({name: 'None', value: null});
+                // console.log(employeeList);
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'managerId',
+                        message: "Who is the employee's manager?",
+                        choices: employeeList
+                    }
+                ]).then((response) => {
+                    employeeDetails.push(response.managerId);
+                    queries.addEmployee(employeeDetails[0], employeeDetails[1], employeeDetails[2], employeeDetails[3]).then(() => console.log('Added employee successfully!\n'));
+                    chooseAction();
+                });
+            });
+        });
+    });
 }
